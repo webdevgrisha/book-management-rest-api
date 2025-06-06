@@ -1,0 +1,25 @@
+post:
+  summary: Register a new user
+  tags:
+    - Auth
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/AuthCredentials.yaml'
+  responses:
+    '201':
+      description: User successfully registered
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: User created
+    '400':
+      description: Invalid input or user already exists
+    '500':
+      description: Internal server error

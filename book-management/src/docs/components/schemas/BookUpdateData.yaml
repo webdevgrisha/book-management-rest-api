@@ -1,0 +1,18 @@
+type: object
+properties:
+  title:
+    type: string
+    example: The Lord of the Rings
+  author:
+    type: string
+    example: J.R.R. Tolkien
+  year:
+    type: integer
+    example: 1954
+  description:
+    type: string
+    example: Epic fantasy novel
+  coverImageUrl:
+    type: string
+    format: uri
+    example: https://example.com/cover.jpg

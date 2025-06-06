@@ -1,0 +1,53 @@
+get:
+  summary: Get a list of user's books
+  tags:
+    - Books
+  parameters:
+    - in: query
+      name: limit
+      schema:
+        type: integer
+        default: 10
+      description: Number of books per page
+    - in: query
+      name: currPage
+      schema:
+        type: integer
+        default: 1
+      description: Current page number
+  security:
+    - bearerAuth: []
+  responses:
+    '200':
+      description: List of user's books
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '../components/schemas/Book.yaml'
+              pagination:
+                $ref: '../components/schemas/PaginationMeta.yaml'
+
+post:
+  summary: Add a new book
+  tags:
+    - Books
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/BookCreateData.yaml'
+  responses:
+    '200':
+      description: Book successfully added
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Book.yaml'

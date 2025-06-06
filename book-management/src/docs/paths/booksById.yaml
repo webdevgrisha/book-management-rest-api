@@ -1,0 +1,70 @@
+get:
+  summary: Get a book by id
+  tags:
+    - Books
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: Book found
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Book.yaml'
+    '404':
+      description: Book not found
+
+patch:
+  summary: Update a book by id
+  tags:
+    - Books
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/BookUpdateData.yaml'
+  responses:
+    '200':
+      description: Book successfully updated
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Book.yaml'
+
+delete:
+  summary: Delete a book by id
+  tags:
+    - Books
+  security:
+    - bearerAuth: []
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: Book successfully deleted
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              deletedBookId:
+                type: integer

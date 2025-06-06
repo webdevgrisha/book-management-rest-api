@@ -1,0 +1,28 @@
+post:
+  summary: Log in a user and get a JWT token
+  tags:
+    - Auth
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../components/schemas/AuthCredentials.yaml'
+  responses:
+    '200':
+      description: User successfully logged in
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+                description: JWT access token
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+    '400':
+      description: Invalid credentials
+    '404':
+      description: User not found
+    '500':
+      description: Internal server error
