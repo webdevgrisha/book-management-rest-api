@@ -18,7 +18,7 @@ function createBookObj(bookInitObj: Record<string, unknown>): BookCreateData {
         throw new ValidationError(`Miss required field ${fieldName}`);
       }
 
-      if (isFieldRequired) {
+      if (isFieldRequired || isFieldExist) {
         fieldConfig.validation(initValue);
       }
 

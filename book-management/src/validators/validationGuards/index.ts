@@ -7,6 +7,8 @@ import { ensureIsPlainObj } from './ensureIsPlainObj.js';
 import { ensureUserIdProvided } from './ensureUserIdProvided.js';
 import { ensureBookExist } from './ensureBookExist.js';
 import { ensureIsPositiveInt } from './ensureIsPositiveInt.js';
+import { ensureValidEmail } from './ensureValidEmail.js';
+import { ensureValidPassword } from './ensureValidPassword.js';
 
 export {
   ensureIsString,
@@ -18,4 +20,6 @@ export {
   ensureUserIdProvided,
   ensureBookExist,
   ensureIsPositiveInt,
+  ensureValidEmail,
+  ensureValidPassword,
 };

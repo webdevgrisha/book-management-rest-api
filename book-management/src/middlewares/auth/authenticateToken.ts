@@ -19,9 +19,10 @@ async function authenticateToken(req: Request, res: Response, next: NextFunction
     logger.info(`Token verified for user: id=${decodedToken.id}, email=${decodedToken.email}`);
 
     req.user = {
-      id: decodedToken.id as number,
+      id: Number(decodedToken.id),
       email: decodedToken.email as string,
     };
+
     next();
   } catch (err) {
     logger.error(`Token verification failed: ${err}, token: ${token.slice(0, 10)}...`);

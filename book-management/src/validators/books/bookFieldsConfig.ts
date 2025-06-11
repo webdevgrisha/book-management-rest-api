@@ -25,7 +25,7 @@ const bookFieldsConfig: BookFieldsConfig[] = [
     _max: 150,
     validation: function (value: unknown): void {
       ensureIsString(value, this.name);
-      ensureLengthInRange(value as string, this.name, this._min!, this._max!);
+      ensureLengthInRange(value, this.name, this._min!, this._max!);
     },
   },
   {
@@ -35,7 +35,7 @@ const bookFieldsConfig: BookFieldsConfig[] = [
     _max: 100,
     validation: function (value: unknown): void {
       ensureIsString(value, this.name);
-      ensureLengthInRange(value as string, this.name, this._min!, this._max!);
+      ensureLengthInRange(value, this.name, this._min!, this._max!);
     },
   },
   {
@@ -45,17 +45,17 @@ const bookFieldsConfig: BookFieldsConfig[] = [
     _max: 500,
     validation: function (value: unknown): void {
       ensureIsString(value, this.name);
-      ensureLengthInRange(value as string, this.name, this._min!, this._max!);
+      ensureLengthInRange(value, this.name, this._min!, this._max!);
     },
   },
   {
     name: 'year',
     isRequired: true,
     _min: 0,
-    _max: 3000,
+    _max: new Date().getFullYear(),
     validation: function (value: unknown): void {
       ensureIsNumber(value, this.name);
-      ensureNumberInRange(value as number, this.name, this._min!, this._max!);
+      ensureNumberInRange(value, this.name, this._min!, this._max!);
     },
   },
   {
@@ -63,7 +63,7 @@ const bookFieldsConfig: BookFieldsConfig[] = [
     isRequired: false,
     validation: function (value: unknown): void {
       ensureIsString(value, this.name);
-      ensureValidURL(value as string, this.name);
+      ensureValidURL(value, this.name);
     },
   },
 ];

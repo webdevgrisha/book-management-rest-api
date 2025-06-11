@@ -34,7 +34,7 @@ async function getBooksService(getBookServiceProps: GetBookServiceProps): Promis
 
   const getBooksCountQueryResponse = db.query<TotalRowsCount>(
     `
-        SELECT COUNT(*) as total
+        SELECT COUNT(*)::int as total
         FROM ${TABLES.BOOKS}
         WHERE user_id = $1
         `,

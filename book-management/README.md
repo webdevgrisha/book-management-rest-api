@@ -27,7 +27,7 @@ Designed as a submission for the **Zappyrent backend technical assessment**.
 | `author`       | string   | Author name               |
 | `description`  | string   | *(optional)*              |
 | `year`         | number   | Year of publication       |
-| `coverImageUrl`| string   | *(optional)*              |
+| `cover_image_url`| string   | *(optional)*              |
 
 ---
 

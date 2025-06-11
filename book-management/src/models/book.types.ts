@@ -13,6 +13,7 @@ interface BookRow extends BookCreateData {
 
 interface DeleteBookRow {
   id: number;
+  cover_image_url?: string;
 }
 
 type BookUpdateData = Partial<BookCreateData>;

@@ -19,6 +19,6 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__tests__/**"]
+  "include": ["src/**/*", "tsconfig.eslint.json"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -6,6 +6,8 @@ const authErrorMap = {
   'auth/user-not-found': { status: 404, message: 'User not found.' },
   'auth/missing-user-id': { status: 400, message: 'User id not provided' },
   'auth/missing-user-email': { status: 400, message: 'User email not provided' },
+  'auth/email-too-long': { status: 400, message: 'User email is too long' },
+  'auth/password-too-long': { status: 400, message: 'User password is too long' },
   'auth/missing-token': { status: 401, message: 'Authorization token is missed' },
   'auth/invalid-token': { status: 401, message: 'Invalid or expired authorization token.' },
   'auth/insufficient-permission': {

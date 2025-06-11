@@ -8,6 +8,9 @@ properties:
   id:
     type: integer
     example: 1
+  user_id:
+    type: integer
+    example: 1
   title:
     type: string
     example: The Lord of the Rings
@@ -20,7 +23,7 @@ properties:
   description:
     type: string
     example: Epic fantasy novel
-  coverImageUrl:
+  cover_image_url:
     type: string
     format: uri
     example: https://example.com/cover.jpg

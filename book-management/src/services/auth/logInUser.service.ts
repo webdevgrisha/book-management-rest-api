@@ -6,6 +6,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { logger } from '../../utils/logger.js';
 import { UserRow } from 'models/user.types.js';
+import { ensureValidEmail, ensureValidPassword } from '../../validators/validationGuards/index.js';
 
 interface TokenObj {
   token: string;
@@ -17,6 +18,9 @@ interface JWTPayload {
 }
 
 async function logInUserService(email: string, password: string): Promise<TokenObj> {
+  ensureValidEmail(email);
+  ensureValidPassword(password, email);
+
   const userQueryResult = await db.query<UserRow>(
     `
       SELECT id, email, password_hash
