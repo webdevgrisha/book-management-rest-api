@@ -1,11 +1,11 @@
 import { db } from '../../config/db.js';
 import { TABLES } from '../../config/tables.js';
-import { DeletedBookId } from '../../modules/books/book.types.js';
-import { ensureBookExist } from '../../validators/validationGuards/ensureBookExist.js';
+import { DeleteBookRow, DeletedBookId } from '../../models/book.types.js';
+import { ensureBookExist } from '../../validators/validationGuards/index.js';
 import { logger } from '../../utils/logger.js';
 
 async function deleteBookByIdService(userId: number, bookId: number): Promise<DeletedBookId> {
-  const result = await db.query(
+  const deleteBookQueryResult = await db.query<DeleteBookRow>(
     `
         DELETE FROM ${TABLES.BOOKS}
         WHERE id = $1 AND user_id = $2
@@ -14,9 +14,9 @@ async function deleteBookByIdService(userId: number, bookId: number): Promise<De
     [bookId, userId],
   );
 
-  ensureBookExist(result.rowCount!, bookId);
+  ensureBookExist(deleteBookQueryResult.rowCount!, bookId);
 
-  const deletedBookId = result.rows[0].id as number;
+  const deletedBookId: number = deleteBookQueryResult.rows[0].id;
 
   logger.info(`Book deleted: bookId=${bookId}, userId=${userId}`);
 

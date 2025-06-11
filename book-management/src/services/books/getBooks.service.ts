@@ -1,12 +1,12 @@
 import { db } from '../../config/db.js';
 import { TABLES } from '../../config/tables.js';
-import { BookData } from '../../modules/books/book.types.js';
-import { PaginationMeta } from '../../types/pagination.types.js';
+import { BookRow } from '../../models/book.types.js';
+import { PaginationMeta, TotalRowsCount } from '../../types/pagination.types.js';
 import { createPaginationObj } from '../../utils/createPaginationObj.js';
 import { logger } from '../../utils/logger.js';
 
-interface GetBooksResponse {
-  data: BookData[];
+interface BooksData {
+  data: BookRow[];
   pagination: PaginationMeta;
 }
 
@@ -16,14 +16,12 @@ interface GetBookServiceProps {
   currPage: number;
 }
 
-async function getBooksService(
-  getBookServiceProps: GetBookServiceProps,
-): Promise<GetBooksResponse> {
+async function getBooksService(getBookServiceProps: GetBookServiceProps): Promise<BooksData> {
   const { userId, limit = 10, currPage = 1 } = getBookServiceProps;
 
   const offset: number = (currPage - 1) * limit;
 
-  const result = await db.query(
+  const getBooksQueryResponse = db.query<BookRow>(
     `
         SELECT * 
         FROM ${TABLES.BOOKS}
@@ -34,7 +32,7 @@ async function getBooksService(
     [userId, limit, offset],
   );
 
-  const countResult = await db.query(
+  const getBooksCountQueryResponse = db.query<TotalRowsCount>(
     `
         SELECT COUNT(*) as total
         FROM ${TABLES.BOOKS}
@@ -43,12 +41,17 @@ async function getBooksService(
     [userId],
   );
 
-  const totalCount: number = countResult.rows[0].total;
+  const [booksQueryResult, booksCountQueryResult] = await Promise.all([
+    getBooksQueryResponse,
+    getBooksCountQueryResponse,
+  ]);
 
-  const bookData = result.rows as BookData[];
+  const totalCount: number = booksCountQueryResult.rows[0].total;
+  const bookData: BookRow[] = booksQueryResult.rows;
+
   const pagination: PaginationMeta = createPaginationObj({ totalCount, currPage, limit });
 
-  const booksResponse: GetBooksResponse = {
+  const booksResponse: BooksData = {
     data: bookData,
     pagination: pagination,
   };

@@ -13,9 +13,7 @@ function handleAuthErrors(err: unknown, req: Request, res: Response, next: NextF
 
   const { status, message } = authErrorMap[err.code];
 
-  logger.error(
-    `AuthError: ${err.name} (${err.code}) for path ${req.originalUrl} - ${message}`
-  );
+  logger.error(`AuthError: ${err.name} (${err.code}) for path ${req.originalUrl} - ${message}`);
 
   res.status(status).json({ error: err.name, message: message });
 }

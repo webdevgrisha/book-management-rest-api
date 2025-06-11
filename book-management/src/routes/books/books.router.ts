@@ -6,18 +6,18 @@ import {
   getBooksController,
   updateBookController,
 } from '../../controllers/books/index.js';
-import { authenticateToken } from '../../middlewares/auth/index.js';
+import { authenticateToken, verifyUser } from '../../middlewares/auth/index.js';
 import {
   handleAuthErrors,
   handleNotFoundErrors,
   handleValidationErrors,
 } from '../../middlewares/handleErrors/index.js';
-import { verifyUser } from '../../middlewares/auth/verifyUser.js';
 
 const booksRouter = Router();
 
 booksRouter.use(authenticateToken);
 booksRouter.use(verifyUser);
+
 booksRouter.get('/', getBooksController);
 booksRouter.get('/:id', getBookByIdController);
 booksRouter.post('/', addBookController);

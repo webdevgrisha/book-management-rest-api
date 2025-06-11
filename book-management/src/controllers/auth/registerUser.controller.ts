@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { registerUserService } from '../../services/auth/index.js';
 import { logger } from '../../utils/logger.js';
+import { ensureIsString } from '../../validators/validationGuards/index.js';
 
 async function registerUserController(
   req: Request,
@@ -10,6 +11,9 @@ async function registerUserController(
   const { email, password } = req.body;
 
   try {
+    ensureIsString(email, 'email');
+    ensureIsString(password, 'password');
+
     const result = await registerUserService(email, password);
 
     logger.info(`User registered: ${email}`);

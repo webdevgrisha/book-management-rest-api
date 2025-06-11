@@ -1,4 +1,4 @@
-import { BookCreateData } from '../../modules/books/book.types.js';
+import { BookCreateData } from '../../models/book.types.js';
 import {
   ensureIsNumber,
   ensureIsString,

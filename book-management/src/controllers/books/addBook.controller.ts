@@ -1,27 +1,25 @@
 import { Request, Response, NextFunction } from 'express';
 import { addBookService } from '../../services/books/index.js';
-import { ensureIsPlainObj } from '../../validators/validationGuards/ensureIsPlainObj.js';
-import { createBookObj } from '../../factories/books/createBookObj.js';
-import { BookCreateData, BookData } from '../../modules/books/book.types.js';
-import { ensureUserIdProvided } from '../../validators/validationGuards/index.js';
+import { createBookObj } from '../../factories/books/index.js';
+import { BookCreateData, BookRow } from '../../models/book.types.js';
+import { ensureIsPlainObj, ensureUserIdProvided } from '../../validators/validationGuards/index.js';
 import { logger } from '../../utils/logger.js';
 
 async function addBookController(req: Request, res: Response, next: NextFunction): Promise<void> {
-  ensureIsPlainObj(req.body, 'bookData');
-
   const bookInitObj: Record<string, unknown> = req.body;
   const userId: number | undefined = req.user?.id;
 
-  ensureUserIdProvided(userId);
-
   try {
+    ensureIsPlainObj(req.body, 'bookData');
+    ensureUserIdProvided(userId);
+
     const bookCreateData: BookCreateData = createBookObj(bookInitObj);
 
-    const bookData: BookData = await addBookService(userId!, bookCreateData);
+    const bookData: BookRow = await addBookService(userId, bookCreateData);
 
     logger.info(`Book added by user ${userId}: ${bookData.title}`);
 
-    res.status(200).json(bookData);
+    res.status(201).json(bookData);
   } catch (err) {
     logger.error(`Add book failed for user ${userId}: ${err}`);
 

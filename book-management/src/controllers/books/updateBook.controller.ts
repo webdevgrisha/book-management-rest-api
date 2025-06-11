@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { updateBookByIdService } from '../../services/books/index.js';
-import { ensureIsPlainObj } from '../../validators/validationGuards/ensureIsPlainObj.js';
-import { BookData, BookUpdateData } from '../../modules/books/book.types.js';
-import { ensureUserIdProvided } from '../../validators/validationGuards/index.js';
-import { updateBookObj } from '../../factories/books/updateBookObj.js';
+import { BookRow, BookUpdateData } from '../../models/book.types.js';
+import {
+  ensureIsNumber,
+  ensureIsPlainObj,
+  ensureUserIdProvided,
+} from '../../validators/validationGuards/index.js';
+import { updateBookObj } from '../../factories/books/index.js';
 import { logger } from '../../utils/logger.js';
 
 async function updateBookController(
@@ -11,19 +14,19 @@ async function updateBookController(
   res: Response,
   next: NextFunction,
 ): Promise<void> {
-  ensureIsPlainObj(req.body, 'updateData');
-
   const bookInitObj: Record<string, unknown> = req.body;
   const bookId: number = Number(req.params.id);
   const userId: number | undefined = req.user?.id;
 
-  ensureUserIdProvided(userId);
-
   try {
+    ensureIsPlainObj(req.body, 'updateData');
+    ensureIsNumber(bookId, 'bookId');
+    ensureUserIdProvided(userId);
+
     const bookUpdateData: BookUpdateData = updateBookObj(bookInitObj);
 
-    const bookData: BookData = await updateBookByIdService({
-      userId: userId!,
+    const bookData: BookRow = await updateBookByIdService({
+      userId,
       bookId,
       bookUpdateData,
     });

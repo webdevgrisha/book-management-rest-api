@@ -1,4 +1,4 @@
-import { PaginationMeta } from "types/pagination.types.js";
+import { PaginationMeta } from '../types/pagination.types.js';
 
 interface CreatePaginationObjProps {
   totalCount: number;

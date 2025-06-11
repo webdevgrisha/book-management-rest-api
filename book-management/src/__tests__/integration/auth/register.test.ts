@@ -9,9 +9,7 @@ describe('Auth Router Integration - /auth/register', () => {
     password: 'StrongPassw0rd!',
   };
 
-  afterAll(async () => {
-    
-  });
+  afterAll(async () => {});
 
   it('should register a new user and return 201', async () => {
     const res = await request(app).post(endpoint).send(testUser);

@@ -6,7 +6,12 @@ interface BookCreateData {
   coverImageUrl?: string;
 }
 
-interface BookData extends BookCreateData {
+interface BookRow extends BookCreateData {
+  id: number;
+  user_id: number;
+}
+
+interface DeleteBookRow {
   id: number;
 }
 
@@ -14,4 +19,4 @@ type BookUpdateData = Partial<BookCreateData>;
 
 type DeletedBookId = { deletedBookId: number };
 
-export type { BookCreateData, BookData, BookUpdateData, DeletedBookId };
+export type { BookCreateData, BookUpdateData, DeletedBookId, BookRow, DeleteBookRow };

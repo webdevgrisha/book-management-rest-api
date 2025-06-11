@@ -1,4 +1,4 @@
-import { BookCreateData, BookUpdateData } from '../../modules/books/book.types.js';
+import { BookCreateData, BookUpdateData } from '../../models/book.types.js';
 import { bookFieldsConfig } from '../../validators/books/bookFieldsConfig.js';
 import { logger } from '../../utils/logger.js';
 

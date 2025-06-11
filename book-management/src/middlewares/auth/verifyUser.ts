@@ -22,7 +22,7 @@ async function verifyUser(req: Request, res: Response, next: NextFunction): Prom
     next();
   } catch (err) {
     logger.error(`User verification failed for ${userEmail}: ${err}`);
-    
+
     next(err);
   }
 }

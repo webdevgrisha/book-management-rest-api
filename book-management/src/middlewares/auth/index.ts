@@ -1,3 +1,4 @@
 import { authenticateToken } from './authenticateToken.js';
+import { verifyUser } from './verifyUser.js';
 
-export { authenticateToken };
+export { authenticateToken, verifyUser };

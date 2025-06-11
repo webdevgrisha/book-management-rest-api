@@ -1,16 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { getBookByIdService } from '../../services/books/index.js';
-import { ensureUserIdProvided } from '../../validators/validationGuards/index.js';
+import { ensureIsNumber, ensureUserIdProvided } from '../../validators/validationGuards/index.js';
 import { logger } from '../../utils/logger.js';
+import { BookRow } from '../../models/book.types.js';
 
-async function getBookByIdController(req: Request, res: Response, next: NextFunction) {
+async function getBookByIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
   const bookId: number = Number(req.params.id);
   const userId: number | undefined = req.user?.id;
 
-  ensureUserIdProvided(userId);
-
   try {
-    const bookData = await getBookByIdService(bookId, userId!);
+    ensureIsNumber(bookId, 'bookId');
+    ensureUserIdProvided(userId);
+
+    const bookData: BookRow = await getBookByIdService(bookId, userId);
 
     logger.info(`Book fetched by user ${userId}: bookId ${bookId}`);
 

@@ -1,7 +1,7 @@
 import { db } from '../../config/db.js';
 import { TABLES } from '../../config/tables.js';
-import { BookData, BookUpdateData } from '../../modules/books/book.types.js';
-import { ensureBookExist } from '../../validators/validationGuards/ensureBookExist.js';
+import { BookRow, BookUpdateData } from '../../models/book.types.js';
+import { ensureBookExist } from '../../validators/validationGuards/index.js';
 import { logger } from '../../utils/logger.js';
 
 interface UpdateBookByIdServiceProps {
@@ -12,12 +12,12 @@ interface UpdateBookByIdServiceProps {
 
 async function updateBookByIdService(
   updateBookByIdServiceProps: UpdateBookByIdServiceProps,
-): Promise<BookData> {
+): Promise<BookRow> {
   const { userId, bookId, bookUpdateData } = updateBookByIdServiceProps;
 
   const { title, author, year, description, coverImageUrl } = bookUpdateData;
 
-  const result = await db.query(
+  const updateBookQueryResult = await db.query<BookRow>(
     `
         UPDATE ${TABLES.BOOKS}
         SET title = COALESCE($3, title),
@@ -31,9 +31,9 @@ async function updateBookByIdService(
     [bookId, userId, title, author, year, description, coverImageUrl],
   );
 
-  ensureBookExist(result.rowCount!, bookId);
+  ensureBookExist(updateBookQueryResult.rowCount!, bookId);
 
-  const updatedBookData = result.rows[0] as BookData;
+  const updatedBookData: BookRow = updateBookQueryResult.rows[0];
 
   logger.info(`Book updated: bookId=${bookId}, userId=${userId}`);
 

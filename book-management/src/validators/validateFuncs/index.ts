@@ -4,5 +4,14 @@ import { isString } from './isString.js';
 import { isLengthInRange } from './isLengthInRange.js';
 import { isPlainObject } from './isPlainObj.js';
 import { isNumberInRange } from './isNumberInRange.js';
+import { isUniqueViolation } from './isUniqueViolation.js';
 
-export { isInteger, isNumber, isString, isLengthInRange, isNumberInRange, isPlainObject };
+export {
+  isInteger,
+  isNumber,
+  isString,
+  isLengthInRange,
+  isNumberInRange,
+  isPlainObject,
+  isUniqueViolation,
+};

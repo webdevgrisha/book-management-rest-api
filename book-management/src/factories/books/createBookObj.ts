@@ -1,5 +1,5 @@
 import { ValidationError } from '../../errors/validationError/validationError.js';
-import { BookCreateData } from '../../modules/books/book.types.js';
+import { BookCreateData } from '../../models/book.types.js';
 import { bookFieldsConfig } from '../../validators/books/bookFieldsConfig.js';
 import { logger } from '../../utils/logger.js';
 
@@ -31,9 +31,7 @@ function createBookObj(bookInitObj: Record<string, unknown>): BookCreateData {
 
     return bookCreateData;
   } catch (err) {
-    logger.error(
-      `createBookObj failed: ${err}, input: ${JSON.stringify(bookInitObj)}`,
-    );
+    logger.error(`createBookObj failed: ${err}, input: ${JSON.stringify(bookInitObj)}`);
     throw err;
   }
 }

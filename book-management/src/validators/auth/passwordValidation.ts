@@ -1,7 +1,7 @@
-function passwordValidation(password: string) {
-  const isValid = password.match(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/);
+function isPassword(password: string): boolean {
+  const isValid = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/.test(password);
 
   return isValid;
 }
 
-export { passwordValidation };
+export { isPassword };

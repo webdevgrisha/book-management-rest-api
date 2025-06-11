@@ -7,4 +7,8 @@ interface PaginationMeta {
   hasPrevPage: boolean;
 }
 
-export type { PaginationMeta };
+interface TotalRowsCount {
+  total: number;
+}
+
+export type { PaginationMeta, TotalRowsCount };
