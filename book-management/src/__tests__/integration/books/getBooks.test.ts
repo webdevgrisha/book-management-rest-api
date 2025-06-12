@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import request from 'supertest';
 import { app } from '../../../server.js';
 import { deleteUserService } from '../../../services/auth/deleteUser.service.js';
-import { BookCreateData } from 'models/book.types.js';
+import { BookCreateData, BookRow } from '../../../models/book.types.js';
 
 const registerEndpoint = '/auth/register';
 const loginEndpoint = '/auth/login';
@@ -19,9 +19,11 @@ const books: BookCreateData[] = [];
 
 beforeAll(async () => {
   await request(app).post(registerEndpoint).send(testUser);
+
   const loginRes = await request(app).post(loginEndpoint).send(testUser);
+
   userAuthToken = loginRes.body.token;
-  // Add 15 books for pagination
+
   for (let i = 1; i <= 15; i++) {
     const book = {
       title: `Book ${i}`,
@@ -30,11 +32,14 @@ beforeAll(async () => {
       description: `Description ${i}`,
       coverImageUrl: `https://example.com/cover${i}.jpg`,
     };
+
     books.push(book);
+
     const addRes = await request(app)
       .post(booksEndpoint)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send(book);
+
     createdBookIds.push(addRes.body.id);
   }
 });
@@ -48,6 +53,7 @@ describe('Books Router Integration - GET /books (pagination)', () => {
     const res = await request(app)
       .get(booksEndpoint)
       .set('Authorization', `Bearer ${userAuthToken}`);
+
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('data');
     expect(res.body).toHaveProperty('pagination');
@@ -67,6 +73,7 @@ describe('Books Router Integration - GET /books (pagination)', () => {
     const res = await request(app)
       .get(`${booksEndpoint}?limit=10&currPage=2`)
       .set('Authorization', `Bearer ${userAuthToken}`);
+
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBe(5);
     expect(res.body.pagination).toMatchObject({
@@ -83,8 +90,8 @@ describe('Books Router Integration - GET /books (pagination)', () => {
     const res = await request(app)
       .get(`${booksEndpoint}?limit=10&currPage=2`)
       .set('Authorization', `Bearer ${userAuthToken}`);
+
     expect(res.status).toBe(200);
-    // The first book on page 2 should be Book 11
     expect(res.body.data[0]).toMatchObject({
       title: 'Book 11',
       author: 'Author 11',
@@ -96,6 +103,7 @@ describe('Books Router Integration - GET /books (pagination)', () => {
 
   it('should return 401 if no userAuthToken is provided', async () => {
     const res = await request(app).get(booksEndpoint);
+
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('error');
   });
@@ -104,7 +112,59 @@ describe('Books Router Integration - GET /books (pagination)', () => {
     const res = await request(app)
       .get(`${booksEndpoint}?limit=-1&currPage=0`)
       .set('Authorization', `Bearer ${userAuthToken}`);
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if limit is not a number', async () => {
+    const res = await request(app)
+      .get(`${booksEndpoint}?limit=abc&currPage=1`)
+      .set('Authorization', `Bearer ${userAuthToken}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('should return 400 if currPage is not a number', async () => {
+    const res = await request(app)
+      .get(`${booksEndpoint}?limit=10&currPage=xyz`)
+      .set('Authorization', `Bearer ${userAuthToken}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it("should not allow a user to get another user's books", async () => {
+    const otherUser = {
+      email: 'other-user-get-books@example.com',
+      password: 'StrongPassw0rd!',
+    };
+
+    await request(app).post(registerEndpoint).send(otherUser);
+    const loginRes = await request(app).post(loginEndpoint).send(otherUser);
+    const otherUserToken = loginRes.body.token;
+
+    for (let i = 1; i <= 3; i++) {
+      const book = {
+        title: `Other Book ${i}`,
+        author: `Other Author ${i}`,
+        year: 2010 + i,
+        description: `Other Description ${i}`,
+        coverImageUrl: `https://example.com/other-cover${i}.jpg`,
+      };
+
+      await request(app)
+        .post(booksEndpoint)
+        .set('Authorization', `Bearer ${otherUserToken}`)
+        .send(book);
+    }
+
+    const res = await request(app)
+      .get(booksEndpoint)
+      .set('Authorization', `Bearer ${userAuthToken}`);
+
+    expect(res.status).toBe(200);
+    expect((res.body.data as BookRow[]).every((b) => !b.title.startsWith('Other Book'))).toBe(true);
   });
 });

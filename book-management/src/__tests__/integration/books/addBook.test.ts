@@ -16,6 +16,7 @@ let userAuthToken: string;
 
 beforeAll(async () => {
   await request(app).post(registerEndpoint).send(testUser);
+
   const loginRes = await request(app).post(loginEndpoint).send(testUser);
   userAuthToken = loginRes.body.token;
 });
@@ -39,8 +40,6 @@ describe('Books Router Integration - POST /books', () => {
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send(book);
 
-    console.log('RESPONSE body: ', res.body);
-
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id');
     expect(res.body).toHaveProperty('user_id');
@@ -58,6 +57,7 @@ describe('Books Router Integration - POST /books', () => {
       .post(booksEndpoint)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ title: 'No Author', year: 2020 });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -71,6 +71,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'Author',
         year: 'not-a-number',
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -85,6 +86,7 @@ describe('Books Router Integration - POST /books', () => {
         year: 2020,
         coverImageUrl: 'not-a-url',
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -95,7 +97,9 @@ describe('Books Router Integration - POST /books', () => {
       author: 'Author',
       year: 2020,
     };
+
     const res = await request(app).post(booksEndpoint).send(book);
+
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('error');
   });
@@ -105,6 +109,7 @@ describe('Books Router Integration - POST /books', () => {
       .post(booksEndpoint)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({});
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -118,6 +123,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'Valid Author',
         year: 2020,
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -131,6 +137,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'Valid Author',
         year: 2020,
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -144,6 +151,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'AB', // min 3
         year: 2020,
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -157,6 +165,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'A'.repeat(101), // max 100
         year: 2020,
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -171,6 +180,7 @@ describe('Books Router Integration - POST /books', () => {
         year: 2020,
         description: 'A'.repeat(501), // max 500
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -184,6 +194,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'Valid Author',
         year: -1, // min 0
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -197,6 +208,7 @@ describe('Books Router Integration - POST /books', () => {
         author: 'Valid Author',
         year: new Date().getFullYear() + 1, // max current year
       });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });

@@ -1,14 +1,9 @@
 import { db } from '../../config/db.js';
 import { TABLES } from '../../config/tables.js';
-import { BookRow } from '../../models/book.types.js';
+import { BookRow, BooksData } from '../../models/book.types.js';
 import { PaginationMeta, TotalRowsCount } from '../../types/pagination.types.js';
 import { createPaginationObj } from '../../utils/createPaginationObj.js';
 import { logger } from '../../utils/logger.js';
-
-interface BooksData {
-  data: BookRow[];
-  pagination: PaginationMeta;
-}
 
 interface GetBookServiceProps {
   userId: number;

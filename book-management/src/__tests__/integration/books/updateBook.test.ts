@@ -20,8 +20,11 @@ let book: BookCreateData;
 
 beforeAll(async () => {
   await request(app).post(registerEndpoint).send(testUser);
+
   const loginRes = await request(app).post(loginEndpoint).send(testUser);
+
   userAuthToken = loginRes.body.token;
+
   book = {
     title: 'Book to Update',
     author: 'Author',
@@ -29,10 +32,12 @@ beforeAll(async () => {
     description: 'Test book',
     coverImageUrl: 'https://example.com/cover.jpg',
   };
+
   const addRes = await request(app)
     .post(booksEndpoint)
     .set('Authorization', `Bearer ${userAuthToken}`)
     .send(book);
+
   createdBookId = addRes.body.id;
   userId = addRes.body.user_id;
 });
@@ -48,10 +53,12 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       year: 2022,
       description: 'Updated description',
     };
+
     const res = await request(app)
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send(update);
+
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
       id: createdBookId,
@@ -69,6 +76,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/99999999`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ title: 'Does not exist' });
+
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
   });
@@ -77,6 +85,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
     const res = await request(app)
       .patch(`${booksEndpoint}/${createdBookId}`)
       .send({ title: 'No token' });
+
     expect(res.status).toBe(401);
     expect(res.body).toHaveProperty('error');
   });
@@ -86,6 +95,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/not-a-number`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ title: 'Invalid id' });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -95,6 +105,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ year: -1 });
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -104,6 +115,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ title: 'AB' }); // min 3
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -113,6 +125,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ title: 'A'.repeat(151) }); // max 150
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -122,6 +135,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ author: 'AB' }); // min 3
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -131,6 +145,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ author: 'A'.repeat(101) }); // max 100
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -140,6 +155,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ description: 'A'.repeat(501) }); // max 500
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -149,6 +165,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ year: -1 }); // min 0
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -158,6 +175,7 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ year: new Date().getFullYear() + 1 }); // max current year
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -167,7 +185,41 @@ describe('Books Router Integration - PATCH /books/:id', () => {
       .patch(`${booksEndpoint}/${createdBookId}`)
       .set('Authorization', `Bearer ${userAuthToken}`)
       .send({ coverImageUrl: 'not-a-url' });
+
     expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it("should not allow a user to update another user's book", async () => {
+    const otherUser = {
+      email: 'other-user-update-book@example.com',
+      password: 'StrongPassw0rd!',
+    };
+
+    await request(app).post(registerEndpoint).send(otherUser);
+    const loginRes = await request(app).post(loginEndpoint).send(otherUser);
+    const otherUserToken = loginRes.body.token;
+
+    const otherBook = {
+      title: 'Other User Book',
+      author: 'Other Author',
+      year: 2021,
+      description: 'Other description',
+      coverImageUrl: 'https://example.com/other-cover.jpg',
+    };
+
+    const addRes = await request(app)
+      .post(booksEndpoint)
+      .set('Authorization', `Bearer ${otherUserToken}`)
+      .send(otherBook);
+    const otherBookId = addRes.body.id;
+
+    const res = await request(app)
+      .patch(`${booksEndpoint}/${otherBookId}`)
+      .set('Authorization', `Bearer ${userAuthToken}`)
+      .send({ title: 'Hacked!' });
+
+    expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
   });
 });

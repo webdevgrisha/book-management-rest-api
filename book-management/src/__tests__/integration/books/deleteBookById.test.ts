@@ -17,6 +17,7 @@ let createdBookId: number;
 
 beforeAll(async () => {
   await request(app).post(registerEndpoint).send(testUser);
+
   const loginRes = await request(app).post(loginEndpoint).send(testUser);
   userAuthToken = loginRes.body.token;
 
@@ -67,7 +68,44 @@ describe('Books Router Integration - DELETE /books/:id', () => {
     const res = await request(app)
       .delete(`${booksEndpoint}/not-a-number`)
       .set('Authorization', `Bearer ${userAuthToken}`);
+
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
+  });
+
+  it("should not allow a user to delete another user's book", async () => {
+    const otherUser = {
+      email: 'other-user-delete-book@example.com',
+      password: 'StrongPassw0rd!',
+    };
+
+    await request(app).post(registerEndpoint).send(otherUser);
+
+    const loginRes = await request(app).post(loginEndpoint).send(otherUser);
+    const otherUserToken = loginRes.body.token;
+
+    const otherBook = {
+      title: 'Other User Book',
+      author: 'Other Author',
+      year: 2021,
+    };
+
+    const addRes = await request(app)
+      .post(booksEndpoint)
+      .set('Authorization', `Bearer ${otherUserToken}`)
+      .send(otherBook);
+    const otherBookId = addRes.body.id;
+
+    const res = await request(app)
+      .delete(`${booksEndpoint}/${otherBookId}`)
+      .set('Authorization', `Bearer ${userAuthToken}`);
+
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty('error');
+
+    await request(app)
+      .delete('/auth/delete')
+      .set('Authorization', `Bearer ${otherUserToken}`)
+      .send({ email: otherUser.email });
   });
 });
