@@ -18,6 +18,19 @@ Designed as a submission for the **Zappyrent backend technical assessment**.
 - ✅ Scripts for development and build
 - ✅ Testing setup with Vitest and Supertest
 
+## 📡 API Endpoints (Base URL: `/`)
+
+### Auth
+- `POST /auth/register` — Register new user
+- `POST /auth/login` — Login user and receive JWT
+
+### Books (protected)
+- `GET /books` — Get paginated list of user's books
+- `GET /books/:id` — Get a single book by ID
+- `POST /books` — Create a new book
+- `PUT /books/:id` — Update a book
+- `DELETE /books/:id` — Delete a book
+
 ## 📘 Book Model
 
 | Field           | Type     | Description               |
@@ -72,3 +85,44 @@ docker-compose up --build
   - **User**: `postgres`
   - **Password**: `postgres`
   - **Database**: `books`
+
+
+## 🗂️ Project Structure
+
+```
+src/
+├── controllers/   # Request handlers for each route (business logic entrypoint)
+├── services/      # Core business logic and database interaction
+├── models/        # TypeScript types and interfaces for data models
+├── routes/        # Express route definitions and routers
+├── middlewares/   # Express middlewares (auth, error handling, etc.)
+├── utils/         # Utility/helper functions (e.g., logger, pagination)
+├── validators/    # Input validation logic and field guards
+├── config/        # Configuration files (DB, JWT, etc.)
+├── __tests__/     # Integration and unit tests
+```
+
+Each folder is responsible for a specific concern, following clean architecture and separation of concerns. This structure makes the codebase easy to navigate, maintain, and extend.
+
+## 📦 Scripts
+
+Common scripts for development and testing:
+
+```bash
+npm run dev         # Start development server with hot reload
+npm run build       # Build the project (TypeScript + Swagger docs)
+npm run lint        # Run ESLint for code quality
+npm run format      # Format code with Prettier
+npm test            # Run all tests (Vitest)
+```
+
+See `package.json` for the full list of available scripts.
+
+## 🧠 Potential Improvements
+
+- Add refresh token mechanism for better session control
+- Rate limiting & brute-force protection (e.g., `express-rate-limit`)
+- Password reset via email
+- User profile management
+- CI/CD pipeline (e.g., GitHub Actions)
+- More granular role-based access control (RBAC)
