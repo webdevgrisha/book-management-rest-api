@@ -21,7 +21,9 @@
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:unit": "vitest run src/__tests__/unit",
+    "test:integration": "vitest run src/__tests__/integration"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
